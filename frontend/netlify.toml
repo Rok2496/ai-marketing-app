@@ -1,0 +1,29 @@
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production.environment]
+  REACT_APP_API_URL = "https://ai-marketing-backend.onrender.com/api/v1"
+  REACT_APP_APP_NAME = "AI Marketing Platform"
+
+[context.deploy-preview.environment]
+  REACT_APP_API_URL = "https://ai-marketing-backend.onrender.com/api/v1"
+  REACT_APP_APP_NAME = "AI Marketing Platform (Preview)"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
