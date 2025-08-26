@@ -1,0 +1,63 @@
+# Configuration file for the AI Image Generator app
+
+# API Configuration - Replace with your actual OpenRouter API key
+API_KEY = "sk-or-v1-your-openrouter-api-key-here"
+BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
+
+# Free Vision Models Available (These can generate images when prompted correctly)
+FREE_VISION_MODELS = {
+    "Gemini 2.5 Flash Image Preview": "google/gemini-2.5-flash-image-preview:free",
+    "Qwen2.5 VL 72B": "qwen/qwen2.5-vl-72b-instruct:free", 
+    "Qwen2.5 VL 32B": "qwen/qwen2.5-vl-32b-instruct:free",
+    "Llama 3.2 11B Vision": "meta-llama/llama-3.2-11b-vision-instruct:free",
+    "Gemma 3 27B": "google/gemma-3-27b-it:free",
+    "Gemma 3 12B": "google/gemma-3-12b-it:free",
+    "Gemma 3 4B": "google/gemma-3-4b-it:free",
+    "Mistral Small 3.2 24B": "mistralai/mistral-small-3.2-24b-instruct:free",
+    "Kimi VL A3B Thinking": "moonshotai/kimi-vl-a3b-thinking:free",
+    "Llama 4 Maverick": "meta-llama/llama-4-maverick:free",
+    "Llama 4 Scout": "meta-llama/llama-4-scout:free"
+}
+
+# Primary model to try first
+ANALYSIS_MODEL = "google/gemini-2.5-flash-image-preview:free"
+
+# Backup models for when rate limits are hit
+BACKUP_MODELS = [
+    "qwen/qwen2.5-vl-72b-instruct:free",
+    "qwen/qwen2.5-vl-32b-instruct:free", 
+    "meta-llama/llama-3.2-11b-vision-instruct:free",
+    "google/gemma-3-27b-it:free",
+    "mistralai/mistral-small-3.2-24b-instruct:free"
+]
+
+# App Configuration
+APP_TITLE = "AI Image Generator & Editor"
+APP_ICON = "🎨"
+
+# Supported file types for image upload
+SUPPORTED_IMAGE_TYPES = ['png', 'jpg', 'jpeg']
+
+# Art styles for text-to-image generation
+ART_STYLES = [
+    "Realistic",
+    "Cartoon", 
+    "Oil Painting",
+    "Watercolor",
+    "Digital Art",
+    "Sketch",
+    "Abstract",
+    "Photorealistic",
+    "Anime",
+    "Comic Book"
+]
+
+# Aspect ratios
+ASPECT_RATIOS = [
+    "Square (1:1)",
+    "Landscape (16:9)", 
+    "Portrait (9:16)",
+    "Wide (21:9)",
+    "Classic (4:3)",
+    "Tall (2:3)"
+]
