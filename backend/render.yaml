@@ -4,7 +4,7 @@ services:
     env: python
     runtime: python-3.11
     buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
-    startCommand: "cd /opt/render/project/src/backend && PYTHONPATH=/opt/render/project/src/backend python -c \"import sys, os, uvicorn; sys.path.insert(0, os.getcwd()); uvicorn.run('app.main:app', host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))\""
+    startCommand: "python run.py"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -17,15 +17,15 @@ services:
       - key: CORS_ORIGINS
         value: "https://graceful-truffle-fa4c90.netlify.app"
       - key: OPENROUTER_API_KEY_1
-        value: "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"
+        sync: false
       - key: OPENROUTER_API_KEY_2
-        value: "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"
+        sync: false
       - key: OPENROUTER_API_KEY_3
-        value: "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"
+        sync: false
       - key: OPENROUTER_API_KEY_4
-        value: "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"
+        sync: false
       - key: OPENROUTER_API_KEY_5
-        value: "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"
+        sync: false
       - key: UPLOAD_DIR
         value: "uploads"
       - key: MAX_FILE_SIZE
