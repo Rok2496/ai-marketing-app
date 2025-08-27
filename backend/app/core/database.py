@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from .config import settings
+from app.core.config import settings
 
 # Sync database setup
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL

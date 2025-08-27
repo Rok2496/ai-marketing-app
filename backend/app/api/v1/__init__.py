@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from . import auth, content, projects, admin
+from app.api.v1 import auth, content, projects, admin
 
 api_router = APIRouter()
 
