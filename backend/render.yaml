@@ -3,8 +3,8 @@ services:
     name: ai-marketing-backend
     env: python
     runtime: python-3.11.8
-    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt && alembic upgrade head"
-    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt && python migrate.py"
+    startCommand: "python main.py"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
