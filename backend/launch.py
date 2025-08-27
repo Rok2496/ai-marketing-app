@@ -36,20 +36,34 @@ def main():
     print(f"Starting server on port {port}")
     
     try:
-        # Import the app after setting up the path
-        from app.main import app
-        print("Successfully imported app")
+        # Test imports step by step
+        print("Testing import: app")
+        import app
+        print("✓ Successfully imported app")
+        
+        print("Testing import: app.core")
+        import app.core
+        print("✓ Successfully imported app.core")
+        
+        print("Testing import: app.core.config")
+        import app.core.config
+        print("✓ Successfully imported app.core.config")
+        
+        print("Testing import: app.main")
+        from app.main import app as fastapi_app
+        print("✓ Successfully imported FastAPI app")
         
         # Start uvicorn with the imported app object
         uvicorn.run(
-            app,
+            fastapi_app,
             host="0.0.0.0",
             port=port,
             log_level="info"
         )
         
     except ImportError as e:
-        print(f"Failed to import app: {e}")
+        print(f"Failed to import: {e}")
+        print(f"Python version: {sys.version}")
         print("Available files in current directory:")
         for item in os.listdir("."):
             print(f"  {item}")
@@ -58,10 +72,27 @@ def main():
             print("Contents of app directory:")
             for item in os.listdir("app"):
                 print(f"  app/{item}")
+                
+        if os.path.exists("app/core"):
+            print("Contents of app/core directory:")
+            for item in os.listdir("app/core"):
+                print(f"  app/core/{item}")
+        
+        # Try to read the config file directly
+        try:
+            with open("app/core/config.py", "r") as f:
+                first_lines = f.readlines()[:10]
+                print("First 10 lines of app/core/config.py:")
+                for i, line in enumerate(first_lines, 1):
+                    print(f"  {i}: {line.rstrip()}")
+        except Exception as read_error:
+            print(f"Could not read config file: {read_error}")
         
         sys.exit(1)
     except Exception as e:
         print(f"Error starting server: {e}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 if __name__ == "__main__":
