@@ -11,7 +11,11 @@ backend_dir = os.path.dirname(os.path.dirname(current_file_dir))  # Go up two le
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-from app.core.config import settings
+try:
+    from app.core.config import settings
+except ImportError:
+    # Try relative import
+    from .config import settings
 
 # Sync database setup
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL

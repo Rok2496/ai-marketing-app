@@ -10,12 +10,40 @@ import os
 # Fix Python path for imports - this must be done before any app imports
 current_file_dir = os.path.dirname(os.path.abspath(__file__))
 backend_dir = os.path.dirname(current_file_dir)  # Go up one level from app/ to backend/
+
+# Add both the backend directory and the current directory to Python path
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
+if current_file_dir not in sys.path:
+    sys.path.insert(0, current_file_dir)
 
-from app.core.config import settings
-from app.core.database import engine, Base
-from app.api.v1 import api_router
+# Also try adding the parent of backend directory (for Render deployment)
+parent_dir = os.path.dirname(backend_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+# Debug path information
+print(f"Current file directory: {current_file_dir}")
+print(f"Backend directory: {backend_dir}")
+print(f"Parent directory: {parent_dir}")
+print(f"Python path: {sys.path[:5]}")
+
+try:
+    from app.core.config import settings
+    from app.core.database import engine, Base
+    from app.api.v1 import api_router
+    print("✅ Successfully imported app modules")
+except ImportError as e:
+    print(f"❌ Import error: {e}")
+    # Try alternative import paths
+    try:
+        from .core.config import settings
+        from .core.database import engine, Base
+        from .api.v1 import api_router
+        print("✅ Successfully imported with relative imports")
+    except ImportError as e2:
+        print(f"❌ Relative import error: {e2}")
+        raise e
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
