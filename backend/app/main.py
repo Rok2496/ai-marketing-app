@@ -28,22 +28,64 @@ print(f"Backend directory: {backend_dir}")
 print(f"Parent directory: {parent_dir}")
 print(f"Python path: {sys.path[:5]}")
 
+# Try multiple import strategies
+settings = None
+engine = None
+Base = None
+api_router = None
+
+# Strategy 1: Direct relative imports (most likely to work)
 try:
-    from app.core.config import settings
-    from app.core.database import engine, Base
-    from app.api.v1 import api_router
-    print("✅ Successfully imported app modules")
+    from .core.config import settings
+    from .core.database import engine, Base
+    from .api.v1 import api_router
+    print("✅ Successfully imported with relative imports")
 except ImportError as e:
-    print(f"❌ Import error: {e}")
-    # Try alternative import paths
+    print(f"❌ Relative import error: {e}")
+    
+    # Strategy 2: Absolute imports
     try:
-        from .core.config import settings
-        from .core.database import engine, Base
-        from .api.v1 import api_router
-        print("✅ Successfully imported with relative imports")
+        from app.core.config import settings
+        from app.core.database import engine, Base
+        from app.api.v1 import api_router
+        print("✅ Successfully imported with absolute imports")
     except ImportError as e2:
-        print(f"❌ Relative import error: {e2}")
-        raise e
+        print(f"❌ Absolute import error: {e2}")
+        
+        # Strategy 3: Manual module loading
+        try:
+            import importlib.util
+            
+            # Load config module
+            config_path = os.path.join(current_file_dir, 'core', 'config.py')
+            spec = importlib.util.spec_from_file_location("config", config_path)
+            config_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(config_module)
+            settings = config_module.settings
+            
+            # Load database module
+            database_path = os.path.join(current_file_dir, 'core', 'database.py')
+            spec = importlib.util.spec_from_file_location("database", database_path)
+            database_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(database_module)
+            engine = database_module.engine
+            Base = database_module.Base
+            
+            # Load API router
+            api_init_path = os.path.join(current_file_dir, 'api', 'v1', '__init__.py')
+            spec = importlib.util.spec_from_file_location("api_v1", api_init_path)
+            api_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(api_module)
+            api_router = api_module.api_router
+            
+            print("✅ Successfully imported with manual module loading")
+        except Exception as e3:
+            print(f"❌ Manual import error: {e3}")
+            raise ImportError(f"Could not import required modules: {e}, {e2}, {e3}")
+
+# Verify all modules were loaded
+if not all([settings, engine, Base, api_router]):
+    raise ImportError("Failed to load all required modules")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

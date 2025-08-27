@@ -5,17 +5,28 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 import sys
 import os
 
-# Fix Python path for imports
-current_file_dir = os.path.dirname(os.path.abspath(__file__))
-backend_dir = os.path.dirname(os.path.dirname(current_file_dir))  # Go up two levels from app/core/ to backend/
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
+# Import settings with multiple fallback strategies
+settings = None
 
 try:
-    from app.core.config import settings
-except ImportError:
-    # Try relative import
+    # Try relative import first
     from .config import settings
+except ImportError:
+    try:
+        # Try absolute import
+        from app.core.config import settings
+    except ImportError:
+        # Manual import as last resort
+        import importlib.util
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(current_dir, 'config.py')
+        spec = importlib.util.spec_from_file_location("config", config_path)
+        config_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(config_module)
+        settings = config_module.settings
+
+if not settings:
+    raise ImportError("Could not import settings from config module")
 
 # Sync database setup
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
