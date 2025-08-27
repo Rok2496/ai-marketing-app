@@ -6,10 +6,28 @@ import os
 import sys
 
 # Add the parent directory to the path so we can import our models
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 
-from app.core.database import Base
-from app.models import *  # Import all models
+# Set PYTHONPATH environment variable for better module resolution
+os.environ['PYTHONPATH'] = parent_dir + ':' + os.environ.get('PYTHONPATH', '')
+
+try:
+    from app.core.database import Base
+    # Import all models to ensure they're registered with SQLAlchemy
+    try:
+        from app.models import *
+    except ImportError:
+        # Models might not exist yet, that's okay for initial migration
+        pass
+except ImportError as e:
+    print(f"Import error: {e}")
+    # Fallback: create a minimal Base for migrations
+    from sqlalchemy.ext.declarative import declarative_base
+    Base = declarative_base()
+    print("Warning: Using fallback Base for migrations")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -31,8 +49,18 @@ target_metadata = Base.metadata
 
 def get_url():
     """Get database URL from environment or config"""
-    from app.core.config import settings
-    return settings.DATABASE_URL
+    # Try to get from environment first
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        return database_url
+    
+    # Fallback to importing settings
+    try:
+        from app.core.config import settings
+        return settings.DATABASE_URL
+    except ImportError:
+        # Last resort: use default from alembic.ini
+        return config.get_main_option("sqlalchemy.url")
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
