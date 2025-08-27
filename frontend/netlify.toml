@@ -13,11 +13,11 @@
   status = 200
 
 [context.production.environment]
-  REACT_APP_API_URL = "https://ai-marketing-backend.onrender.com/api/v1"
+  REACT_APP_API_URL = ""
   REACT_APP_APP_NAME = "AI Marketing Platform"
 
 [context.deploy-preview.environment]
-  REACT_APP_API_URL = "https://ai-marketing-backend.onrender.com/api/v1"
+  REACT_APP_API_URL = "https://backend-ai-image.onrender.com/api/v1"
   REACT_APP_APP_NAME = "AI Marketing Platform (Preview)"
 
 [[headers]]
