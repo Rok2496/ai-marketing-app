@@ -6,22 +6,16 @@ import logging
 import os
 import sys
 
-# Handle both relative and absolute imports for deployment compatibility
-try:
-    # Try relative imports first (for normal package usage)
-    from .core.config import settings
-    from .core.database import engine, Base
-    from .api.v1 import api_router
-except ImportError:
-    # Fallback to absolute imports (for deployment environments)
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    parent_dir = os.path.dirname(current_dir)
-    if parent_dir not in sys.path:
-        sys.path.insert(0, parent_dir)
-    
-    from app.core.config import settings
-    from app.core.database import engine, Base
-    from app.api.v1 import api_router
+# Add the parent directory to Python path for absolute imports
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+# Use absolute imports
+from app.core.config import settings
+from app.core.database import engine, Base
+from app.api.v1 import api_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -94,7 +88,7 @@ async def global_exception_handler(request, exc):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
-        "app.main:app",
+        "app.main_absolute:app",
         host="0.0.0.0",
         port=8000,
         reload=settings.DEBUG
