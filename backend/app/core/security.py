@@ -1,33 +1,13 @@
+"""
+Security utilities for authentication and authorization
+"""
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import HTTPException, status
-import sys
-import os
 
-# Import settings with multiple fallback strategies
-settings = None
-
-try:
-    # Try relative import first
-    from .config import settings
-except ImportError:
-    try:
-        # Try absolute import
-        from app.core.config import settings
-    except ImportError:
-        # Manual import as last resort
-        import importlib.util
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(current_dir, 'config.py')
-        spec = importlib.util.spec_from_file_location("config", config_path)
-        config_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(config_module)
-        settings = config_module.settings
-
-if not settings:
-    raise ImportError("Could not import settings from config module")
+from .config import settings
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

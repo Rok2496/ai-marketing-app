@@ -1,15 +1,22 @@
+# Core FastAPI dependencies
 fastapi
 uvicorn[standard]
+
+# Database
 sqlalchemy
 alembic
 psycopg2-binary
 asyncpg
+
+# Data validation and settings
 pydantic
 pydantic-settings
+
+# Authentication
 python-jose[cryptography]
 passlib[bcrypt]
+
+# File handling and HTTP
 python-multipart
 httpx
 pillow
-redis
-python-dateutil

@@ -4,7 +4,7 @@ services:
     env: python
     runtime: python-3.11
     buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
-    startCommand: "python simple_main.py"
+    startCommand: "python main.py"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -15,7 +15,7 @@ services:
       - key: DEBUG
         value: "false"
       - key: CORS_ORIGINS
-        value: "https://graceful-truffle-fa4c90.netlify.app"
+        value: "https://graceful-truffle-fa4c90.netlify.app,http://localhost:3000"
       - key: OPENROUTER_API_KEY_1
         sync: false
       - key: OPENROUTER_API_KEY_2
@@ -26,14 +26,16 @@ services:
         sync: false
       - key: OPENROUTER_API_KEY_5
         sync: false
+      - key: OPENROUTER_API_KEY_6
+        sync: false
+      - key: OPENROUTER_SITE_URL
+        value: "https://ai-marketing-app-bmvz.onrender.com"
       - key: UPLOAD_DIR
         value: "uploads"
       - key: MAX_FILE_SIZE
         value: "10485760"
       - key: ALLOWED_IMAGE_EXTENSIONS
         value: "jpg,jpeg,png,webp"
-      - key: REDIS_URL
-        value: "redis://localhost:6379/0"
       - key: OPENROUTER_BASE_URL
         value: "https://openrouter.ai/api/v1/chat/completions"
       - key: OPENROUTER_SITE_NAME

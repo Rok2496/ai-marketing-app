@@ -1,89 +1,102 @@
-# AI Marketing Platform - Backend API
+# AI Marketing Platform - Backend
 
-A comprehensive FastAPI backend for an AI-powered marketing platform that provides content generation, product image enhancement, and marketing assistance.
+A clean, production-ready FastAPI backend for an AI-powered marketing platform that provides content generation, product image enhancement, and marketing assistance.
 
-## Features
+## 🚀 Features
 
-### 🎨 Content Generation
-- **Text to Image**: Generate images from text descriptions
+### Content Generation
+- **Text to Image**: Generate images from text descriptions using AI models
 - **3D Product Rendering**: Transform product photos into professional 3D renders
 - **Professional Product Photography**: Enhance product images with professional styling
-
-### 📈 Marketing Assistant
 - **SEO Content Generation**: Create SEO-optimized captions and content
 - **Content Calendar Planning**: Generate comprehensive content plans
-- **Marketing Strategy**: Create detailed marketing plans for different goals (outreach, sales, branding)
+- **Marketing Strategy**: Create detailed marketing plans for different goals
 
-### 🔧 Technical Features
-- **Multiple API Key Management**: Automatic fallback between 5-6 API keys
+### Technical Features
+- **Multiple API Key Management**: Automatic fallback between 5 OpenRouter API keys
 - **Rate Limit Handling**: Smart rotation when keys hit limits
 - **PostgreSQL Database**: Robust data storage with SQLAlchemy ORM
 - **File Upload Management**: Secure image upload and storage
 - **JWT Authentication**: Secure user authentication
 - **Admin Dashboard**: System monitoring and user management
 
-## Quick Start
+## 📁 Project Structure
 
-### 1. Environment Setup
-
-```bash
-# Clone the repository
-cd backend
-
-# Install dependencies
-pip install -r backend_requirements.txt
-
-# Copy environment file
-cp .env.example .env
+```
+backend/
+├── app/
+│   ├── api/v1/              # API routes
+│   │   ├── auth.py          # Authentication endpoints
+│   │   ├── content.py       # Content generation endpoints
+│   │   ├── projects.py      # Project management endpoints
+│   │   └── admin.py         # Admin endpoints
+│   ├── core/                # Core functionality
+│   │   ├── config.py        # Application settings
+│   │   ├── database.py      # Database configuration
+│   │   └── security.py      # Security utilities
+│   ├── models/              # Database models
+│   │   ├── user.py          # User model
+│   │   ├── project.py       # Project and ProductImage models
+│   │   └── content.py       # Content generation models
+│   ├── services/            # Business logic
+│   │   ├── ai_service.py    # AI API integration
+│   │   └── api_key_manager.py # API key management
+│   └── main.py              # FastAPI application
+├── alembic/                 # Database migrations
+├── main.py                  # Application entry point
+├── requirements.txt         # Python dependencies
+├── render.yaml             # Render deployment config
+└── README.md               # This file
 ```
 
-### 2. Configure Environment
+## 🛠️ Installation & Setup
 
-Edit `.env` file with your settings:
+### Prerequisites
+- Python 3.11+
+- PostgreSQL database
+- OpenRouter API keys
 
-```env
-# Database
-DATABASE_URL=postgresql://username:password@localhost:5432/ai_marketing_db
+### Local Development
 
-# API Keys (Add 5-6 keys for redundancy)
-OPENROUTER_API_KEY_1=sk-or-v1-your-primary-key
-OPENROUTER_API_KEY_2=sk-or-v1-your-backup-key-1
-OPENROUTER_API_KEY_3=sk-or-v1-your-backup-key-2
-# ... add more keys
+1. **Clone and navigate to backend**
+   ```bash
+   cd backend
+   ```
 
-# JWT Secret
-JWT_SECRET_KEY=your-super-secret-key-change-this
-```
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 3. Database Setup
+3. **Configure environment**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your settings
+   ```
 
-```bash
-# Install PostgreSQL and create database
-createdb ai_marketing_db
+4. **Setup database**
+   ```bash
+   # Create PostgreSQL database
+   createdb ai_marketing_db
+   
+   # Run migrations
+   alembic upgrade head
+   ```
 
-# Run migrations
-alembic upgrade head
-```
-
-### 4. Run the Application
-
-```bash
-# Development mode
-python run.py
-
-# Or with uvicorn directly
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
+5. **Start the application**
+   ```bash
+   python main.py
+   ```
 
 The API will be available at `http://localhost:8000`
 
-## API Documentation
+## 🌐 API Documentation
 
 Once running, visit:
 - **Swagger UI**: `http://localhost:8000/docs`
 - **ReDoc**: `http://localhost:8000/redoc`
 
-## API Endpoints
+## 📋 API Endpoints
 
 ### Authentication
 - `POST /api/v1/auth/register` - Register new user
@@ -106,9 +119,66 @@ Once running, visit:
 ### Admin (Superuser only)
 - `GET /api/v1/admin/stats` - System statistics
 - `GET /api/v1/admin/api-keys/status` - API key status
-- `POST /api/v1/admin/api-keys/rotate` - Force key rotation
 
-## Database Schema
+## 🔧 Configuration
+
+### Environment Variables
+
+```env
+# Database
+DATABASE_URL=postgresql://user:pass@localhost:5432/ai_marketing_db
+
+# OpenRouter API Keys (5 keys for redundancy)
+OPENROUTER_API_KEY_1=your-primary-key
+OPENROUTER_API_KEY_2=your-backup-key-1
+OPENROUTER_API_KEY_3=your-backup-key-2
+OPENROUTER_API_KEY_4=your-backup-key-3
+OPENROUTER_API_KEY_5=your-backup-key-4
+
+# JWT Secret
+JWT_SECRET_KEY=your-super-secret-key
+
+# Application
+DEBUG=false
+CORS_ORIGINS=https://yourdomain.com
+```
+
+## 🚀 Deployment
+
+### Render Deployment
+
+1. **Connect your repository** to Render
+2. **Set Root Directory** to `backend`
+3. **Configure build settings**:
+   - **Build Command**: `pip install --upgrade pip && pip install -r requirements.txt`
+   - **Start Command**: `python main.py`
+4. **Set environment variables** in Render dashboard
+5. **Connect PostgreSQL database**
+
+### Docker Deployment
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+EXPOSE 8000
+
+CMD ["python", "main.py"]
+```
+
+## 🔐 Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Password Hashing**: bcrypt for password security
+- **File Validation**: Strict file type and size limits
+- **CORS Configuration**: Configurable cross-origin settings
+- **Rate Limiting**: Built-in API key rate limit handling
+
+## 📊 Database Schema
 
 ### Users
 - User authentication and profile information
@@ -125,12 +195,7 @@ Once running, visit:
 - Store generation parameters and results
 - Performance metrics and model usage
 
-### Marketing Plans
-- Comprehensive marketing strategies
-- Goal-based planning (outreach, sales, branding)
-- SEO analysis and recommendations
-
-## API Key Management
+## 🔑 API Key Management
 
 The system supports multiple OpenRouter API keys with automatic fallback:
 
@@ -139,105 +204,29 @@ The system supports multiple OpenRouter API keys with automatic fallback:
 3. **Smart Rotation**: Tracks rate limits and errors for each key
 4. **Auto-Recovery**: Reactivates keys when rate limits reset
 
-### Key Status Tracking
-- Rate limit monitoring
-- Error count tracking
-- Automatic deactivation/reactivation
-- Admin dashboard for manual management
+## 🏥 Health Monitoring
 
-## File Upload System
-
-- **Secure Storage**: Files stored in organized project directories
-- **Image Validation**: Type and size validation
-- **Metadata Extraction**: Automatic width/height detection
-- **Primary Image**: Support for main product image designation
-
-## Development
-
-### Project Structure
-```
-backend/
-├── app/
-│   ├── api/v1/          # API routes
-│   ├── core/            # Core functionality
-│   ├── models/          # Database models
-│   ├── services/        # Business logic
-│   └── main.py          # FastAPI app
-├── alembic/             # Database migrations
-├── uploads/             # File storage
-└── requirements.txt     # Dependencies
-```
-
-### Adding New Features
-
-1. **Models**: Add to `app/models/`
-2. **API Routes**: Add to `app/api/v1/`
-3. **Services**: Add business logic to `app/services/`
-4. **Migrations**: `alembic revision --autogenerate -m "description"`
-
-### Testing
-
-```bash
-# Install test dependencies
-pip install pytest pytest-asyncio httpx
-
-# Run tests
-pytest
-```
-
-## Deployment
-
-### Docker Deployment
-
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY backend_requirements.txt .
-RUN pip install -r backend_requirements.txt
-
-COPY backend/ .
-EXPOSE 8000
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-### Environment Variables for Production
-
-```env
-DEBUG=False
-DATABASE_URL=postgresql://user:pass@db:5432/ai_marketing_db
-JWT_SECRET_KEY=production-secret-key
-CORS_ORIGINS=https://yourdomain.com
-```
-
-## Monitoring
-
-### Health Checks
 - `GET /health` - Basic health check
-- `GET /api/v1/admin/stats` - Detailed system stats
-
-### Logging
-- Structured logging with different levels
+- `GET /api/v1/admin/stats` - Detailed system statistics
+- Comprehensive logging with different levels
 - API key usage tracking
-- Error monitoring and alerting
 
-## Security
+## 🤝 Contributing
 
-- **JWT Authentication**: Secure token-based auth
-- **Password Hashing**: bcrypt for password security
-- **File Validation**: Strict file type and size limits
-- **CORS Configuration**: Configurable cross-origin settings
-- **Rate Limiting**: Built-in API key rate limit handling
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## Support
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
 
 For issues and questions:
 1. Check the API documentation at `/docs`
 2. Review logs for error details
 3. Monitor API key status in admin dashboard
 4. Ensure database connectivity
-
-## License
-
-This project is licensed under the MIT License.
