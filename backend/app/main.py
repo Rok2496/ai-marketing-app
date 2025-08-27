@@ -7,6 +7,12 @@ import subprocess
 import sys
 import os
 
+# Fix Python path for imports - this must be done before any app imports
+current_file_dir = os.path.dirname(os.path.abspath(__file__))
+backend_dir = os.path.dirname(current_file_dir)  # Go up one level from app/ to backend/
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+
 from app.core.config import settings
 from app.core.database import engine, Base
 from app.api.v1 import api_router

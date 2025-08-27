@@ -2,6 +2,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+import sys
+import os
+
+# Fix Python path for imports
+current_file_dir = os.path.dirname(os.path.abspath(__file__))
+backend_dir = os.path.dirname(os.path.dirname(current_file_dir))  # Go up two levels from app/core/ to backend/
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+
 from app.core.config import settings
 
 # Sync database setup
