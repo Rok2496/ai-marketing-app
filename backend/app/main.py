@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import logging
+import subprocess
+import sys
+import os
 
 from .core.config import settings
 from .core.database import engine, Base
@@ -12,14 +15,42 @@ from .api.v1 import api_router
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def run_migrations():
+    """Run Alembic migrations on startup"""
+    try:
+        logger.info("Running database migrations...")
+        # Get the directory where this file is located
+        current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        # Run alembic upgrade head
+        result = subprocess.run(
+            [sys.executable, "-m", "alembic", "upgrade", "head"],
+            cwd=current_dir,
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode == 0:
+            logger.info("Database migrations completed successfully")
+            logger.info(result.stdout)
+        else:
+            logger.error(f"Migration failed: {result.stderr}")
+            # Don't fail startup, fallback to create_all
+            logger.info("Falling back to create_all...")
+            Base.metadata.create_all(bind=engine)
+            
+    except Exception as e:
+        logger.error(f"Error running migrations: {e}")
+        logger.info("Falling back to create_all...")
+        Base.metadata.create_all(bind=engine)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting up AI Marketing Platform API")
     
-    # Create database tables
-    Base.metadata.create_all(bind=engine)
-    logger.info("Database tables created")
+    # Run database migrations
+    run_migrations()
     
     yield
     
