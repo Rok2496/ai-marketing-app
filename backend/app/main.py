@@ -10,10 +10,10 @@ import subprocess
 import sys
 import os
 
-# Import core modules
-from .core.config import settings
-from .core.database import engine, Base
-from .api.v1 import api_router
+# Import core modules - using absolute imports
+from app.core.config import settings
+from app.core.database import engine, Base
+from app.api.v1 import api_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

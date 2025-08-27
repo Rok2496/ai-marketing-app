@@ -1,6 +1,7 @@
 # Core FastAPI dependencies
 fastapi
 uvicorn[standard]
+gunicorn
 
 # Database
 sqlalchemy
