@@ -5,85 +5,47 @@ from alembic import context
 import os
 import sys
 
-# Set up Python path properly for imports
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
+# Add the parent directory to the path so we can import our models
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-# Add parent directory to Python path
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
+from app.core.database import Base
+from app.models import *  # Import all models
 
-# Set PYTHONPATH environment variable
-os.environ['PYTHONPATH'] = parent_dir
-
-# Change to parent directory for consistent imports
-os.chdir(parent_dir)
-
-# Now try to import with better error handling
-Base = None
-try:
-    # Try to import the database Base
-    from app.core.database import Base
-    print("Successfully imported app.core.database.Base")
-    
-    # Try to import models to register them
-    try:
-        from app.models import *
-        print("Successfully imported app models")
-    except ImportError as e:
-        print(f"Could not import models (this is okay for initial migration): {e}")
-        
-except ImportError as e:
-    print(f"Could not import app.core.database: {e}")
-    
-    # Try alternative import approach
-    try:
-        import app.core.database
-        Base = app.core.database.Base
-        print("Successfully imported Base using alternative method")
-    except ImportError as e2:
-        print(f"Alternative import also failed: {e2}")
-        
-        # Final fallback: create minimal Base
-        from sqlalchemy.ext.declarative import declarative_base
-        Base = declarative_base()
-        print("Using fallback declarative_base for migrations")
-
-# Ensure we have a Base object
-if Base is None:
-    from sqlalchemy.ext.declarative import declarative_base
-    Base = declarative_base()
-    print("Created fallback Base object")
-
-# this is the Alembic Config object
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
 config = context.config
 
-# Interpret the config file for Python logging
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here for 'autogenerate' support
+# add your model's MetaData object here
+# for 'autogenerate' support
 target_metadata = Base.metadata
+
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option("my_important_option")
+# ... etc.
 
 def get_url():
     """Get database URL from environment or config"""
-    # Try environment variable first (this is what Render sets)
-    database_url = os.environ.get('DATABASE_URL')
-    if database_url:
-        print(f"Using DATABASE_URL from environment")
-        return database_url
-    
-    # Try to import settings
-    try:
-        from app.core.config import settings
-        print("Using DATABASE_URL from settings")
-        return settings.DATABASE_URL
-    except ImportError:
-        print("Could not import settings, using alembic.ini default")
-        return config.get_main_option("sqlalchemy.url")
+    from app.core.config import settings
+    return settings.DATABASE_URL
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode."""
+    """Run migrations in 'offline' mode.
+
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don't even need a DBAPI to be available.
+
+    Calls to context.execute() here emit the given string to the
+    script output.
+
+    """
     url = get_url()
     context.configure(
         url=url,
@@ -95,8 +57,14 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
+
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode."""
+    """Run migrations in 'online' mode.
+
+    In this scenario we need to create an Engine
+    and associate a connection with the context.
+
+    """
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = get_url()
     
@@ -113,6 +81,7 @@ def run_migrations_online() -> None:
 
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

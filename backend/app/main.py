@@ -1,22 +1,12 @@
-import os
-import sys
-
-# Ensure Python can find our modules
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import logging
 
-# Import our modules
-from app.core.config import settings
-from app.core.database import engine, Base
-from app.api.v1 import api_router
+from .core.config import settings
+from .core.database import engine, Base
+from .api.v1 import api_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -84,4 +74,13 @@ async def global_exception_handler(request, exc):
     return HTTPException(
         status_code=500,
         detail="Internal server error"
+    )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=settings.DEBUG
     )
