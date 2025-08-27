@@ -14,7 +14,7 @@ services:
       - key: DEBUG
         value: "false"
       - key: CORS_ORIGINS
-        value: "https://ai-marketing-platform.netlify.app"
+        value: "https://graceful-truffle-fa4c90.netlify.app"
     
 databases:
   - name: ai-marketing-db
